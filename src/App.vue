@@ -1,28 +1,62 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <!-- Navigation -->
+    <nav>
+      <ul>
+        <li 
+          v-for="(page, index) in pages" 
+          :key="index"
+          @click="changeActivePage(page)"
+          :style="getActiveStyling(page)">
+          {{ page }}
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Pages -->
+    <PageHome v-if="activePage == 'home'"/>
+    <PageVoting v-if="activePage == 'voting'"/>
+    <PageArtists v-if="activePage == 'artists'"/>
+
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+  import PageHome from "./pages/PageHome.vue";
+  import PageVoting from "./pages/PageVoting.vue";
+  import PageArtists from "./pages/PageArtists.vue";
 
-export default {
-  name: 'App',
-  components: {
-    HelloWorld
+  export default {
+    name: 'App',
+    components: {
+      PageHome,
+      PageVoting,
+      PageArtists
+    },
+    // internal use, can be overwritten
+    data() {
+      return {
+        activePage: "artists",
+        pages: [
+          "home",
+          "artists",
+          "voting"
+        ]
+      }
+    },
+    // all the functions needed
+    methods: {
+      changeActivePage(page) {
+        this.activePage = page;
+      },
+      getActiveStyling(page) {
+        if (page == this.activePage) {
+          return "text-decoration: underline; font-weight:bold";
+        }
+
+        return "";
+      }
+    }
   }
-}
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
