@@ -23,6 +23,10 @@
                 Add {{ button.points }} {{ button.isVoted }}
             </button>
         </div>
+
+        <button @click="changePage()">
+            Go to ranking page
+        </button>
     </div>
 </template>
 
@@ -55,9 +59,18 @@
             }
         },
         methods: {
+            changePage() {
+                this.$emit("changeActivePage", 'ranking');
+            },
             vote(buttonIndex, amountOfPoints) {
                 let songId = this.mappedSongs[this.activeSongIndex].id;
                 this.buttons[buttonIndex].isVoted = true;
+
+                if (this.buttons.filter((button) => button.isVoted == false).length == 0) {
+                    setTimeout(() => {
+                        this.$emit("changeActivePage", 'ranking');
+                    }, 1000)
+                }
 
                 fetch("http://webservies.be/eurosong/Votes", {
                     method: "POST",
