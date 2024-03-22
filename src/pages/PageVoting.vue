@@ -4,12 +4,25 @@
             Voting
         </h1>
 
-        <ul>
-            <li v-for="song in mappedSongs" :key="song.id">
-                {{song.artistObject.name}} - {{ song.title }}
-            </li>
-
-        </ul>
+        <div>
+            <div v-for="(song, index) in mappedSongs" :key="song.id">
+                <div v-if="index == activeSongIndex">
+                    {{song.artistObject.name}} - {{ song.title }}
+                </div>
+            </div>
+        </div>
+        <button @click="prevSong()" :disabled="activeSongIndex == 0">
+            Prev
+        </button>
+        <button @click="nextSong()" v-bind:disabled="activeSongIndex == (mappedSongs.length - 1)">
+            Next
+        </button>
+        <br>
+        <div v-for="(button, index) in buttons" :key="index">
+            <button @click="vote(index, button.points)" :disabled="button.isVoted == true">
+                Add {{ button.points }} {{ button.isVoted }}
+            </button>
+        </div>
     </div>
 </template>
 
@@ -23,10 +36,52 @@
             return {
                 songs: [],
                 artists: [],
-                mappedSongs: []
+                mappedSongs: [],
+                activeSongIndex: 0,
+                buttons: [
+                    {
+                        points: 2,
+                        isVoted: false,
+                    },
+                    {
+                        points: 4,
+                        isVoted: false,
+                    },
+                    {
+                        points: 6,
+                        isVoted: false,
+                    },
+                ]
             }
         },
         methods: {
+            vote(buttonIndex, amountOfPoints) {
+                let songId = this.mappedSongs[this.activeSongIndex].id;
+                this.buttons[buttonIndex].isVoted = true;
+
+                fetch("http://webservies.be/eurosong/Votes", {
+                    method: "POST",
+                    headers: {
+                        'accept': 'application/json',
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ 
+                        songID: songId,
+                        ip:"undefined",
+                        points: amountOfPoints
+                    })
+                })
+                .then((response) => response.json())
+                .then((vote) => {
+                    console.log(vote);
+                });
+            },
+            prevSong(){
+                this.activeSongIndex--;
+            },
+            nextSong() {
+                this.activeSongIndex++;
+            },
             fetchSongs() {
                 fetch("http://webservies.be/eurosong/Songs", {
                     method: "GET",
