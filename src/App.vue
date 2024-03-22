@@ -36,7 +36,7 @@
     // internal use, can be overwritten
     data() {
       return {
-        activePage: "artists",
+        activePage: "voting",
         pages: [
           "home",
           "artists",
